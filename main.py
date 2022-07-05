@@ -5,6 +5,7 @@ import requests
 from dotenv import load_dotenv
 from url_to_file_utils import download_file, get_file_extension
 
+API_VK_VERSION = 5.131
 
 def fetch_xkcd_random_comic(folder):
     comic_folder = 'comics/'
@@ -30,7 +31,7 @@ def upload_photo_vk(vk_token, file_path):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
     payload = {
         'access_token': vk_token,
-        'v': 5.131
+        'v': API_VK_VERSION
     }
     response = requests.get(url, params=payload)
     response.raise_for_status()
@@ -59,7 +60,7 @@ def post_photo_vk_wall(vk_token, group_id, owner_photo_id, photo_id, message):
     url = 'https://api.vk.com/method/wall.post'
     payload = {
         'access_token': vk_token,
-        'v': 5.131,
+        'v': API_VK_VERSION,
         'owner_id': -group_id,
         'from_group': 1,
         'attachments': f"photo{owner_photo_id}_{photo_id}",
