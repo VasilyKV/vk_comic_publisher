@@ -9,6 +9,12 @@ from url_to_file_utils import download_file, get_file_extension
 API_VK_VERSION = 5.131
 
 
+def check_vk_errors(response):
+    if 'error' in response:
+        print(response.get('error'))
+        raise requests.exceptions.HTTPError
+
+
 def fetch_xkcd_random_comic(folder):
     comic_folder = 'comics/'
     url = 'https://xkcd.com/info.0.json'
@@ -38,6 +44,7 @@ def upload_photo_vk(vk_token, file_path):
     response = requests.get(url, params=payload)
     response.raise_for_status()
     upload_server = response.json()
+    check_vk_errors(upload_server)
 
     with open(file_path, 'rb') as file:
         url = upload_server['response']['upload_url']
@@ -47,6 +54,7 @@ def upload_photo_vk(vk_token, file_path):
         response = requests.post(url, files=files)
         response.raise_for_status()
         uploaded_photo = response.json()
+        check_vk_errors(uploaded_photo)
 
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
     payload['photo'] = uploaded_photo['photo']
@@ -54,8 +62,9 @@ def upload_photo_vk(vk_token, file_path):
     payload['hash'] = uploaded_photo['hash']
     response = requests.get(url, params=payload)
     response.raise_for_status()
-    saved_photo = response.json()['response'][0]
-    return saved_photo['owner_id'], saved_photo['id']
+    saved_photo = response.json()
+    check_vk_errors(saved_photo)
+    return saved_photo['response'][0]['owner_id'], saved_photo['response'][0]['id']
 
 
 def post_photo_vk_wall(vk_token, group_id, owner_photo_id, photo_id, message):
@@ -71,6 +80,7 @@ def post_photo_vk_wall(vk_token, group_id, owner_photo_id, photo_id, message):
     response = requests.post(url, params=payload)
     response.raise_for_status()
     wall_posted = response.json()
+    check_vk_errors(wall_posted)
 
 
 def main():
