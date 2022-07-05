@@ -75,10 +75,12 @@ def main():
     vk_token = os.getenv('VK_TOKEN')
     group_id = int(os.getenv('VK_GROUP_ID'))
     folder = 'comics/'
-    file_path, comic_alt = fetch_xkcd_random_comic(folder)
-    owner_photo_id, photo_id = upload_photo_vk(vk_token, file_path)
-    post_photo_vk_wall(vk_token, group_id, owner_photo_id, photo_id, comic_alt)
-    os.remove(file_path)
+    try:
+        file_path, comic_alt = fetch_xkcd_random_comic(folder)
+        owner_photo_id, photo_id = upload_photo_vk(vk_token, file_path)
+        post_photo_vk_wall(vk_token, group_id, owner_photo_id, photo_id, comic_alt)
+    finally:
+        os.remove(file_path)
 
 
 if __name__ == '__main__':
